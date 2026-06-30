@@ -1273,6 +1273,65 @@ const dailyReadingAddons = {
   }
 };
 
+const topicNames = {
+  zh: {
+    wealth: "财气",
+    career: "事业",
+    love: "感情",
+    beauty: "气色",
+    calm: "心神",
+    health: "身心"
+  },
+  en: {
+    wealth: "wealth",
+    career: "work",
+    love: "relationship",
+    beauty: "presence",
+    calm: "mind",
+    health: "wellbeing"
+  }
+};
+
+const officerReadingFrame = {
+  zh: {
+    jian: "逢建日，重在起势。今天不求马上见结果，先把一个方向立起来，做一个可执行的小开始。",
+    chu: "逢除日，重在去旧。今天适合清掉消耗、误会和多余负担，状态越干净，后面的路越顺。",
+    man: "逢满日，重在收纳与滋养。今天适合补资源、补气色、补关系里的温度，但不要让承诺过满。",
+    ping: "逢平日，重在调和。今天不宜硬冲，适合把节奏放平，把话说稳，把关系和选择重新摆正。",
+    ding: "逢定日，重在落位。今天适合确定一个小决定、一个安排或一条边界，让心里更有秩序。",
+    zhi: "逢执日，重在跟进。今天适合把手里的事继续推进，但要记得用力有度，不要把坚持变成拧巴。",
+    po: "逢破日，重在止损。今天适合看见问题、拆掉旧模式，不宜冲动加码或强求圆满。",
+    wei: "逢危日，重在谨慎。今天先稳住身体和判断，重要选择多复核一步，不必急着证明自己。",
+    cheng: "逢成日，重在完成。今天适合把准备好的事推出去、说出口、交付出去，让成果被看见。",
+    shou: "逢收日，重在聚气。今天适合回收注意力、整理资料、收款复盘，把散开的能量收回来。",
+    kai: "逢开日，重在打开。今天适合发布、邀约、表达和展示，让你的能力与气质被合适的人看见。",
+    bi: "逢闭日，重在藏养。今天适合休息、内修、整理后台，不必强行外放，留白也是一种推进。"
+  },
+  en: {
+    jian: "On an Establish day, begin. Do not force results; set one clear direction and take one executable step.",
+    chu: "On a Remove day, clear the old. Reduce drain, confusion and unnecessary weight so the next step is cleaner.",
+    man: "On a Full day, gather and nourish. Add resources and warmth, but do not overfill promises.",
+    ping: "On a Balance day, adjust. Do not push hard; steady the rhythm, words and choices.",
+    ding: "On a Settle day, place things. Make one small decision, arrangement or boundary clearer.",
+    zhi: "On a Hold day, follow through. Continue what is in hand, but keep effort measured.",
+    po: "On a Break day, cut loss. Notice cracks and dismantle old patterns; avoid impulsive escalation.",
+    wei: "On a Caution day, review. Stabilize body and judgment before important choices.",
+    cheng: "On a Complete day, bring prepared work to result. Publish, deliver or say what is ready.",
+    shou: "On a Receive day, gather energy. Collect attention, materials and payment; review what has scattered.",
+    kai: "On an Open day, be seen. Publish, invite, express and present to suitable people.",
+    bi: "On a Close day, preserve. Rest, refine internally and let space become progress."
+  }
+};
+
+function buildOfficerBaseReading(topic, officer, lang) {
+  const name = topicNames[lang]?.[topic] || topicNames[lang]?.calm || topic;
+  const frame = officerReadingFrame[lang]?.[officer.key] || "";
+  if (lang === "zh") {
+    return `${name}今日看${officer.zh}日：${frame}`;
+  }
+  return `Today's ${name} follows ${officer.en}: ${frame}`;
+}
+
 const dailyVerses = [
   {
     zh: "山中何事？松花酿酒，春水煎茶。",
@@ -1725,16 +1784,17 @@ function buildDailyReading(topic, mode = "test") {
   const solar = getCurrentSolarTerm(date);
   const solarName = lang === "zh" ? solar.current.zh : solar.current.en;
   const topicCopy = mode === "oracle" ? oracleCopy[lang][topic] : dailyTestCopy[lang][topic];
-  const base = topicCopy?.[element] || "";
+  const elementBase = topicCopy?.[element] || "";
+  const officerBase = buildOfficerBaseReading(topic, officer, lang);
   const addonTopic = dailyReadingAddons[lang][topic] ? topic : "calm";
   const addon = pickDailyByContext(dailyReadingAddons[lang][addonTopic], topic, mode === "oracle" ? 37 : 19, date);
 
   if (lang === "zh") {
     const officerName = `${officer.zh}日`;
-    return `${base}\n\n今日为${dayPillar}日，值${officerName}，属${officerItem.grade}。${solarName}气中，宜顺势而行：${addon}`;
+    return `${officerBase}\n\n气质补充：${elementBase}\n\n今日为${dayPillar}日，值${officerName}，属${officerItem.grade}。${solarName}气中，宜顺势而行：${addon}`;
   }
 
-  return `${base}\n\nToday is a ${dayPillar} day, with ${officer.en} as the daily officer (${officerItem.grade}). Under ${solarName}, move with the day: ${addon}`;
+  return `${officerBase}\n\nTemperament note: ${elementBase}\n\nToday is a ${dayPillar} day, with ${officer.en} as the daily officer (${officerItem.grade}). Under ${solarName}, move with the day: ${addon}`;
 }
 
 function renderDaily() {
