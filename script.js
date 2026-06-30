@@ -1783,18 +1783,16 @@ function buildDailyReading(topic, mode = "test") {
   const officerItem = officerCopy[lang][officer.key];
   const solar = getCurrentSolarTerm(date);
   const solarName = lang === "zh" ? solar.current.zh : solar.current.en;
-  const topicCopy = mode === "oracle" ? oracleCopy[lang][topic] : dailyTestCopy[lang][topic];
-  const elementBase = topicCopy?.[element] || "";
   const officerBase = buildOfficerBaseReading(topic, officer, lang);
   const addonTopic = dailyReadingAddons[lang][topic] ? topic : "calm";
   const addon = pickDailyByContext(dailyReadingAddons[lang][addonTopic], topic, mode === "oracle" ? 37 : 19, date);
 
   if (lang === "zh") {
     const officerName = `${officer.zh}日`;
-    return `${officerBase}\n\n气质补充：${elementBase}\n\n今日为${dayPillar}日，值${officerName}，属${officerItem.grade}。${solarName}气中，宜顺势而行：${addon}`;
+    return `${officerBase}\n\n今日为${dayPillar}日，值${officerName}，属${officerItem.grade}。${solarName}气中，宜顺势而行：${addon}`;
   }
 
-  return `${officerBase}\n\nTemperament note: ${elementBase}\n\nToday is a ${dayPillar} day, with ${officer.en} as the daily officer (${officerItem.grade}). Under ${solarName}, move with the day: ${addon}`;
+  return `${officerBase}\n\nToday is a ${dayPillar} day, with ${officer.en} as the daily officer (${officerItem.grade}). Under ${solarName}, move with the day: ${addon}`;
 }
 
 function renderDaily() {
